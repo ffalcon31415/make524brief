@@ -1,0 +1,30 @@
+[project]
+name = "streamlit524"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "ffalcon31415", email = "77492177+ffalcon31415@users.noreply.github.com" }
+]
+dependencies = [
+    "streamlit>=1.29.0",
+    "sendgrid>=6.11.0",
+]
+readme = "README.md"
+requires-python = ">= 3.11"
+
+[project.scripts]
+hello = "streamlit524:hello"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = []
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/streamlit524"]
