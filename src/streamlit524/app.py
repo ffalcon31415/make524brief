@@ -16,9 +16,9 @@ def send_email_to_me(
     subject: str,
 ):
     try:
-        FROM_EMAIL_ADDRESS = st.secrets("FROM_EMAIL_ADDRESS")
-        TO_EMAIL_ADDRESS = st.secrets("TO_EMAIL_ADDRESS")
-        SENDGRID_KEY = st.secrets("SENDGRID_KEY")
+        FROM_EMAIL_ADDRESS = st.secrets["FROM_EMAIL_ADDRESS"]
+        TO_EMAIL_ADDRESS = st.secrets["TO_EMAIL_ADDRESS"]
+        SENDGRID_KEY = st.secrets["SENDGRID_KEY"]
 
     except Exception as e:
         print("Failed to retrieve configuration: " + str(e))
@@ -45,7 +45,7 @@ def send_email_to_me(
 
 def main():
     try:
-        PASSWORD = st.secrets("PASSWORD")
+        PASSWORD = st.secrets["PASSWORD"]
     except Exception as e:
         print("Failed to retrieve configuration: " + str(e))
         raise e
