@@ -18,6 +18,7 @@ def send_email_to_me(
     try:
         FROM_EMAIL_ADDRESS = config("FROM_EMAIL_ADDRESS")
         TO_EMAIL_ADDRESS = config("TO_EMAIL_ADDRESS")
+        SENDGRID_KEY = config("SENDGRID_KEY")
 
     except Exception as e:
         print("Failed to retrieve configuration: " + str(e))
@@ -34,7 +35,7 @@ def send_email_to_me(
 
 
     try:
-        sg = SendGridAPIClient("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")
+        sg = SendGridAPIClient(SENDGRID_KEY)
         response = sg.send(email)
         print("Sent email")
 
