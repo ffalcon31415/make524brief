@@ -36,32 +36,62 @@ def send_email_to_me(
 
     try:
         sg = SendGridAPIClient(SENDGRID_KEY)
-        response = sg.send(email)
+        print("Sending email " + str(email.subject))
+        sg.send(email)
         print("Sent email")
 
     except exceptions.BadRequestsError as e:
         print("Error sending email: " + str(e.body))
 
+def check_password():
+    """Returns `True` if the user had the correct password."""
+    
+    import hmac
+
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if hmac.compare_digest(st.session_state["password"], st.secrets["PASSWORD"]):
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store the password.
+        else:
+            st.session_state["password_correct"] = False
+
+    # Return True if the passward is validated.
+    if st.session_state.get("password_correct", False):
+        return True
+
+    # Show input for password.
+    st.text_input(
+        "Password", type="password", on_change=password_entered, key="password"
+    )
+    if "password_correct" in st.session_state:
+        st.error("😕 Password incorrect")
+    return False
+
 
 def main():
-    try:
-        PASSWORD = st.secrets["PASSWORD"]
-    except Exception as e:
-        print("Failed to retrieve configuration: " + str(e))
-        raise e
+
+    
+    if not check_password():    
+        st.stop()  # Do not continue if check_password is not True.
+
     with st.form(key="my_form", clear_on_submit=True):
-        st.markdown("# Create 524 briefs")
-        result = st.text_input(
+        st.markdown("## Create 524 briefs")
+        results = st.text_input(
             label="Enter the *accused*  profile number(s) ... *not* the file number. To process more than one, separate them by commas.",
 
         )
-        password = st.text_input(label="Enter the password",type='password')
         submitted = st.form_submit_button("Submit")
-    if password != PASSWORD:
-        st.toast("Wrong password!")  
-    elif submitted and result:    
-        print(result)
-        send_email_to_me(plain_text_content="Message", subject=f"jes streamlit-524 {result}")
+
+    if submitted and results:  
+        try:
+            candidates = [result.strip() for result in results.split(',')]
+            list(map(int, candidates))
+            results = ",".join(candidates)
+        except ValueError:
+            st.error("Invalid input. Must be comma-separated list of numbers.")
+                            
+        send_email_to_me(plain_text_content="Message", subject=f"jes streamlit-524 {results}")
         st.toast("Request submitted! Wait a few minutes and then check the folder.")
 
 if __name__ == "__main__":
