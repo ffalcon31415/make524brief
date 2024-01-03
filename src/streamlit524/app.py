@@ -89,10 +89,17 @@ def main():
             list(map(int, candidates))
             results = ",".join(candidates)
         except ValueError:
-            st.error("Invalid input. Must be comma-separated list of numbers.")
-                            
-        send_email_to_me(plain_text_content="Message", subject=f"jes streamlit-524 {results}")
-        st.toast("Request submitted! Wait a few minutes and then check the folder.")
+            st.error("Invalid input. Please enter a number, or a sequence of numbers separated by commas. Try again.")
+            results = None
+
+        if results:  
+            send_email_to_me(plain_text_content="Message", subject=f"jes streamlit-524 {results}")
+            st.balloons()
+            st.success(f"Request submitted for scope profile(s): {results.replace(',',', ')}")
+            st.markdown(f"Wait a few minutes and then check the [folder]({st.secrets.FOLDER_URL}) for results.")
+            st.markdown("#### Reminder it's up to you to both (a) *vet* the briefs and (b) upload and distribute them.")
+            
+
 
 if __name__ == "__main__":
     main()
