@@ -1,14 +1,5 @@
 import streamlit as st
-from decouple import config
-
-from sendgrid import SendGridAPIClient  # type:ignore
-from sendgrid.helpers.mail import (
-    Mail,
-    To,
-    From,
-)  # type:ignore
-from python_http_client import exceptions  # type:ignore
-
+import resend
 import os
 
 def send_email_to_me(
@@ -18,30 +9,30 @@ def send_email_to_me(
     try:
         FROM_EMAIL_ADDRESS = st.secrets["FROM_EMAIL_ADDRESS"]
         TO_EMAIL_ADDRESS = st.secrets["TO_EMAIL_ADDRESS"]
-        SENDGRID_KEY = st.secrets["SENDGRID_KEY"]
+        RESEND_API_KEY = st.secrets["RESEND_API_KEY"]
 
     except Exception as e:
         print("Failed to retrieve configuration: " + str(e))
         raise e
     
-    to_emails = [To(email=TO_EMAIL_ADDRESS)]
-    email = Mail(
-        from_email=From(email=FROM_EMAIL_ADDRESS),
-        to_emails=to_emails,
-        subject=subject,
-        plain_text_content=plain_text_content,
-    )
-
-
+    # Set the Resend API key
+    resend.api_key = RESEND_API_KEY
 
     try:
-        sg = SendGridAPIClient(SENDGRID_KEY)
-        print("Sending email " + str(email.subject))
-        sg.send(email)
+        print("Sending email " + str(subject))
+        
+        params = {
+            "from": FROM_EMAIL_ADDRESS,
+            "to": [TO_EMAIL_ADDRESS],
+            "subject": subject,
+            "text": plain_text_content,
+        }
+        
+        email = resend.Emails.send(params)
         print("Sent email")
-
-    except exceptions.BadRequestsError as e:
-        print("Error sending email: " + str(e.body))
+        
+    except Exception as e:
+        print("Error sending email: " + str(e))
 
 def check_password():
     """Returns `True` if the user had the correct password."""
